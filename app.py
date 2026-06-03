@@ -1,28 +1,32 @@
 import gradio as gr
 
 # Replace this with your actual model inference
-def predict(text):
-    return f"Model output: {text}"
+def annotate(text):
+    words = len(text)
+    sentences = text.count('.') + text.count('!') + text.count('?')
+    # return a csv of note id, word count, sentence count
+    note_id = "note_001"  # Replace with actual note ID
+    return f"{note_id},{words},{sentences}"
 
 with gr.Blocks() as demo:
     
     # Small greeting text
-    gr.Markdown("## hi there")
+    gr.Markdown("## Hi there. Provide a medical note below:")
     
     # Big text input
     input_text = gr.Textbox(
-        placeholder="share a piece of your writing",
+        placeholder="Enter a medical note here...",
         lines=10,
         label=""
     )
     
     # Button
-    submit_btn = gr.Button("Submit")
+    submit_btn = gr.Button("Annotate Note")
     
     # Output (optional, but useful)
     output = gr.Textbox(label="Output")
 
     # Connect button → function
-    submit_btn.click(fn=predict, inputs=input_text, outputs=output)
+    submit_btn.click(fn=annotate, inputs=input_text, outputs=output)
 
 demo.launch()
