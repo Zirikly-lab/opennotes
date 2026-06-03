@@ -26,7 +26,10 @@ with gr.Blocks() as demo:
     # Output (optional, but useful)
     output = gr.Textbox(label="Output")
 
+    # display output as a table
+    output_table = gr.Dataframe(headers=["Note ID", "Word Count", "Sentence Count"], label="Annotation Results")
+  
     # Connect button → function
-    submit_btn.click(fn=annotate, inputs=input_text, outputs=output)
+    submit_btn.click(fn=annotate, inputs=input_text, outputs=output_table)
 
 demo.launch()
