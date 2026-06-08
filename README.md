@@ -16,7 +16,7 @@ pinned: false
 Note/Document length 
 Document length distributions (tokens, sentences, sections) 
 
-##Lexical & Semantic features: 
+## Lexical & Semantic features: 
 Match terms to the Consumer Health Vocabulary52 for the medical/technical vs. lay terms
 Vocabulary size and type-token ratios 
 Medical terminology density (UMLS concept coverage and SNOMED) 
