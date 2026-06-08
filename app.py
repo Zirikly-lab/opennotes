@@ -1,12 +1,13 @@
 import gradio as gr
-
+from fuchen.word_frequency import get_wordfreq_metrics
+import spacy
 
 def annotate(text):
     note_id = "note_001"
     word_count = len(text.split())
     sentence_count = text.count(".") + text.count("!") + text.count("?")
-
-    return [[note_id, word_count, sentence_count]]
+    wordfreq_metrics = get_wordfreq_metrics(text)
+    return [[note_id, word_count, sentence_count, wordfreq_metrics['mean_freq_original'], wordfreq_metrics['mean_freq_improved'], wordfreq_metrics['mean_zipf_freq']]]
 
 
 with gr.Blocks() as demo:
