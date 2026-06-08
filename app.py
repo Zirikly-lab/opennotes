@@ -22,7 +22,7 @@ with gr.Blocks() as demo:
     submit_btn = gr.Button("Annotate Note")
 
     output_table = gr.Dataframe(
-        headers=["Note ID", "Word Count", "Sentence Count"],
+        headers=["Note ID", "Word Count", "Sentence Count", "Mean Freq (Original)", "Mean Freq (Improved)", "Mean Zipf Freq"],
         label="Annotation Results",
         interactive=False
     )
