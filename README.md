@@ -48,20 +48,19 @@ CSV file with all of the output fields
 JSON file with all of the output fields
 Other options?
 
+| Feature | How It Was Calculated | Approach | Notes |
+|---------|----------------------|----------|-------|
+| Word Count | `len(text.split())` | Simple | None |
+| Sentence Count | Count of `.`, `!`, `?` | Simple | Misses abbreviations like "Dr." |
+| Mean Frequency (Original/Improved/Zipf) | `wordfreq` package | Library | None |
+| Tokens | `nltk.word_tokenize()` | Library | None |
+| Types | `set(tokens)` | Simple | None |
+| Type-Token Ratio (TTR) | `len(types)/len(tokens)` | Simple | Use MATTR for long texts |
+| CHV Terms Found | Dict lookup vs 10 hardcoded terms | **Needs: UMLS license + CHV subset + Aho-Corasick** | Brute force fails at 50K terms |
+| Medical Terminology Density | Counts all nouns via spaCy POS | **Needs: UMLS license + QuickUMLS or scispacy** | Current method is wrong (counts "patient" as medical) |
+| UMLS Concepts Found | Placeholder - generic NER | **Needs: UMLS license + MRCONSO.RRF + QuickUMLS (8GB RAM)** | Not implemented |
+| Abbreviation Frequency | Regex `\b[A-Z]{2,5}\b` | Simple | Misses "bid", "prn" |
+| Abbreviation Standardization Rate | Match vs 12 hardcoded | **Needs: UMLS abbreviation database** | Toy list |
+| Eponyms per 1K Tokens | Match vs 5 hardcoded names | **Needs: Complete eponyms list + NER filtering** | Toy list |
+| Brand Names per 1K Tokens | Match vs 6 hardcoded drugs | **Needs: RxNorm database + drug NER** | Toy list |
 
-| Feature | How It Was Calculated | Notes |
-|---------|----------------------|-------|
-| Word Count | `len(text.split())` | None |
-| Sentence Count | Count of `.`, `!`, `?` | Misses abbreviations like "Dr." |
-| Mean Frequency (Original/Improved/Zipf) | `wordfreq` package lookups | None |
-| Tokens | `nltk.word_tokenize()` | None |
-| Types | `set(tokens)` | None |
-| Type-Token Ratio (TTR) | `len(types) / len(tokens)` | TTR drops with longer texts; use MATTR for production |
-| CHV Terms Found | Dictionary lookup vs. predefined technical terms | Full CHV has 50K terms → brute force O(n*m) fails. Use Aho-Corasick |
-| CHV Coverage % | `(matched_terms / total_chv_terms) * 100` | Only meaningful if CHV is complete |
-| Medical Terminology Density | `(medical_nouns / total_tokens) * 100` using spaCy POS | Overcounts non-medical nouns ("patient") |
-| UMLS Concepts Found | Placeholder - counts generic spaCy entities | **Not real UMLS**. Real = QuickUMLS (8GB RAM, 1K notes/min) or scispacy |
-| Abbreviation Frequency | Regex `\b[A-Z]{2,5}\b` | Misses lowercase clinical abbrevs ("bid", "prn") |
-| Abbreviation Standardization Rate | Match against 12 common abbrevs | Needs full UMLS abbrev database (50K pairs) |
-| Eponyms per 1K Tokens | Match against 5 eponyms (Parkinson, etc.) | Toy list. Full detection requires NER + KB lookup |
-| Brand Names per 1K Tokens | Match against 6 drug names | Toy list. Full list = RxNorm (100K+ names) needs NER |
