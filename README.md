@@ -1,3 +1,14 @@
+----
+-title: Opennotes
+-emoji: 🐠
+-colorFrom: gray
+-colorTo: indigo
+-sdk: gradio
+-sdk_version: 6.15.2
+-python_version: '3.13'
+-app_file: app.py
+-pinned: false
+----
 A huggingface space code for an mvp version of the EHR annotation tool we are building. This readme includes a todo of the features we are implemented and their status.
 
 Try it live: huggingface.co/spaces/saadsorganization/opennotes
