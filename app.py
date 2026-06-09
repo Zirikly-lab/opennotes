@@ -254,7 +254,7 @@ with gr.Blocks(title="EHR Annotation Tool", theme=gr.themes.Soft()) as demo:
         label="📈 Annotation Results",
         interactive=False,
         wrap=True,
-        max_cols=20
+        # max_cols=20
     )
     
     def load_example():
