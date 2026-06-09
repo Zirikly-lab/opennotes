@@ -49,24 +49,19 @@ JSON file with all of the output fields
 Other options?
 
 
-| Feature | How It Was Calculated | Notes & Scaling Considerations |
-|---------|----------------------|-------------------------------|
-| **Word Count** | `len(text.split())` | Trivial. Scales O(n). |
-| **Sentence Count** | Count of `.`, `!`, `?` characters | Inaccurate for abbreviations (e.g., "Dr.", "e.g."). Scaling: use spaCy sentence tokenizer for production. |
-| **Mean Frequency (Original)** | From `wordfreq` package - raw frequency per million | O(n) lookups. Scaling: wordfreq uses precomputed database, fine for ~10K notes. Memory: ~50MB. |
-| **Mean Frequency (Improved)** | From `wordfreq` - weighted by corpus | Same as above. |
-| **Mean Zipf Frequency** | From `wordfreq` - Zipf scale (1-7) | Same as above. |
-| **Tokens** | `nltk.word_tokenize()` | O(n). Scaling: NLTK is slow on large docs (10M+ tokens). Replace with `spaCy` tokenizer (2-3x faster). |
-| **Types** | `set(tokens)` | O(n) time, O(unique tokens) memory. Scaling: for 100K notes, types set could hit 500K+ items → memory pressure. Use streaming/bloom filters. |
-| **Type-Token Ratio (TTR)** | `len(types) / len(tokens)` | Simple. But TTR is length-sensitive (shorter texts = higher TTR). Scaling: use **MATTR** (Moving Average TTR) for robust cross-doc comparison. |
-| **CHV Technical Terms Found** | Dictionary lookup of lowercase text for predefined technical terms (e.g., "myocardial infarction") | O(k * n) where k = CHV size. Current CHV = ~10 terms → fine. **Scaling hazard**: Full CHV has ~50K terms. Each note would do 50K substring checks → O(50K * note_length). **Fix**: Use Aho-Corasick automaton or regex trie for O(n + m) time. Also requires full CHV data license from UMLS. |
-| **CHV Lay Alternatives** | Count of unique lay terms mapped from matched technical terms | Same as above. |
-| **CHV Coverage %** | `(unique_technical_matches / total_chv_terms) * 100` | Only meaningful if CHV is complete. Scaling: coverage becomes sparse (most terms not in a single note). Consider **recall@k** instead. |
-| **Medical Terminology Density** | `(unique_medical_nouns_propn / total_tokens) * 100` where medical = spaCy POS tags (NOUN, PROPN) with length > 2 | Oversimplified (captures non-medical nouns like "patient", "room"). Scaling: spaCy POS tagging is O(n) but ~100K tokens/sec on CPU. Better: Use **scispacy** + UMLS lookup → 10x slower but accurate. Density formula itself is fine. |
-| **UMLS Concepts Found** | Count of unique spaCy named entities (filtered by PERSON/ORG/GPE/DATE) | **This is incorrect** - those are generic NER, not UMLS concepts. Scaling: Proper UMLS extraction requires **QuickUMLS** (faster, ~1K notes/min) or **SciSpacy + UMLS** (slower, ~200 notes/min). QuickUMLS needs 8GB RAM for index. For prototype, this is a placeholder. |
-| **Abbreviation Frequency** | `(abbrev_count / total_tokens)` where abbrev = `\b[A-Z]{2,5}\b` regex | O(n) regex. Misses lowercase abbrevs (e.g., "bid", "prn"). Scaling: Regex is fast ( <1ms per KB). Consider **Ab3P** or **Schwartz-Hearst** algorithm for definition detection (10x slower but accurate). |
-| **Abbreviation Standardization Rate** | `(abbrevs_in_standard_list / unique_abbrevs) * 100` with 12 common medical abbrevs | Depends heavily on list completeness. Scaling: Need full UMLS abbreviation database or **PubMed abbreviations** (~50K pairs). Then O(log n) lookup per abbrev with hash map - fine. |
-| **Eponyms per 1,000 Tokens** | `(eponym_count / total_tokens) * 1000` where eponym = match against set of 5 names (Parkinson, Alzheimer, etc.) | Current set is toy (5 eponyms). Scaling: Need full **eponym list** (~2,000 names from medical naming conventions). Use **fasttext** or **Word2Vec** for name detection? Eponym detection is hard - many false positives (e.g., "Thomas", "Jones" as patient names vs. "Thomas splint"). Production: Use NER to filter person names, then check if they appear in known eponym KB. |
-| **Brand Names per 1,000 Tokens** | `(brand_count / total_tokens) * 1000` against set of 6 drug brand names | Same scaling issue as eponyms. Full **RxNorm** has 100K+ brand names. Detection: Use **scispacy drug NER** or **ChemNER** (slower but accurate). Brand names change over time → need monthly updates. |
-| **Total Names** | Sum of eponym + brand name counts | Simple addition. No scaling issues. |
-
+| Feature | How It Was Calculated | Notes |
+|---------|----------------------|-------|
+| Word Count | `len(text.split())` | None |
+| Sentence Count | Count of `.`, `!`, `?` | Misses abbreviations like "Dr." |
+| Mean Frequency (Original/Improved/Zipf) | `wordfreq` package lookups | None |
+| Tokens | `nltk.word_tokenize()` | None |
+| Types | `set(tokens)` | None |
+| Type-Token Ratio (TTR) | `len(types) / len(tokens)` | TTR drops with longer texts; use MATTR for production |
+| CHV Terms Found | Dictionary lookup vs. predefined technical terms | Full CHV has 50K terms → brute force O(n*m) fails. Use Aho-Corasick |
+| CHV Coverage % | `(matched_terms / total_chv_terms) * 100` | Only meaningful if CHV is complete |
+| Medical Terminology Density | `(medical_nouns / total_tokens) * 100` using spaCy POS | Overcounts non-medical nouns ("patient") |
+| UMLS Concepts Found | Placeholder - counts generic spaCy entities | **Not real UMLS**. Real = QuickUMLS (8GB RAM, 1K notes/min) or scispacy |
+| Abbreviation Frequency | Regex `\b[A-Z]{2,5}\b` | Misses lowercase clinical abbrevs ("bid", "prn") |
+| Abbreviation Standardization Rate | Match against 12 common abbrevs | Needs full UMLS abbrev database (50K pairs) |
+| Eponyms per 1K Tokens | Match against 5 eponyms (Parkinson, etc.) | Toy list. Full detection requires NER + KB lookup |
+| Brand Names per 1K Tokens | Match against 6 drug names | Toy list. Full list = RxNorm (100K+ names) needs NER |
