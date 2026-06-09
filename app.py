@@ -230,11 +230,11 @@ with gr.Blocks(title="EHR Annotation Tool", theme=gr.themes.Soft()) as demo:
                 lines=15,
                 label="Medical Progress Note"
             )
-            submit_btn = gr.Button("🔍 Annotate Note", variant="primary", size="lg")
+            submit_btn = gr.Button("Annotate Note", variant="primary", size="lg")
         
-        with gr.Column(scale=1):
-            gr.Markdown("### 📊 Quick Stats")
-            example_btn = gr.Button("📋 Load Example", size="sm")
+        # with gr.Column(scale=1):
+        #     gr.Markdown("### 📊 Quick Stats")
+        #     example_btn = gr.Button("📋 Load Example", size="sm")
     
     output_table = gr.Dataframe(
         headers=[
@@ -246,7 +246,7 @@ with gr.Blocks(title="EHR Annotation Tool", theme=gr.themes.Soft()) as demo:
             "Abbrev Frequency", "Abbrev Std Rate %",
             "Eponyms/1K", "Brands/1K", "Total Names"
         ],
-        label="📈 Annotation Results",
+        label="Annotation Results",
         interactive=False,
         wrap=True,
         # max_cols=20
