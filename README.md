@@ -1,20 +1,13 @@
----
-title: Opennotes
-emoji: 🐠
-colorFrom: gray
-colorTo: indigo
-sdk: gradio
-sdk_version: 6.15.2
-python_version: '3.13'
-app_file: app.py
-pinned: false
----
+A huggingface space code for an mvp version of the EHR annotation tool we are building. This readme includes a todo of the features we are implemented and their status.
 
+Try it live: huggingface.co/spaces/saadsorganization/opennotes
 
-# Features
+You have to be part of my Saad's Organization other wise it is prive. Send an invite to join.
+# Features to Implement
+
 ## Structural features: 
-Note/Document length 
-Document length distributions (tokens, sentences, sections) 
+[X] Note/Document length 
+[X] Document length distributions (tokens, sentences, sections) 
 
 ## Lexical & Semantic features: 
 Match terms to the Consumer Health Vocabulary52 for the medical/technical vs. lay terms
