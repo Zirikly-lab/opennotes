@@ -218,14 +218,9 @@ def annotate(text):
 # Create Gradio interface
 with gr.Blocks(title="EHR Annotation Tool", theme=gr.themes.Soft()) as demo:
     gr.Markdown("""
-    # 🏥 EHR Annotation Tool
+    # EHR Annotation Tool
     
-    This tool analyzes medical notes for:
-    - **Vocabulary metrics** (Type-Token Ratio)
-    - **Consumer Health Vocabulary** (technical → lay term matching)
-    - **Medical terminology density** (UMLS/SNOMED concepts)
-    - **Abbreviation frequency & standardization**
-    - **Eponym & brand name usage patterns**
+    Provide a medical note to annotate:
     """)
     
     with gr.Row():
@@ -257,16 +252,7 @@ with gr.Blocks(title="EHR Annotation Tool", theme=gr.themes.Soft()) as demo:
         # max_cols=20
     )
     
-    def load_example():
-        return """PROGRESS NOTE - 12/15/2024
-    
-Patient with HTN and DM type 2 presents with acute SOB and chest pain. 
-MRI of chest shows possible pulmonary embolism. BP 160/90, HR 110, RR 22.
-No signs of myocardial infarction. Will start heparin and monitor for CVA symptoms.
-Patient reports taking Tylenol for headache. Review Parkinson's medications.
-Plan: CT scan tomorrow, follow up for COPD exacerbation."""
-    
-    example_btn.click(fn=load_example, outputs=input_text)
+    # example_btn.click(fn=load_example, outputs=input_text)
     submit_btn.click(fn=annotate, inputs=input_text, outputs=output_table)
 
 if __name__ == "__main__":
